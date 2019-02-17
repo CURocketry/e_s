@@ -1,5 +1,6 @@
 #include "SPI.h"
 #include "RFM69.h"
+#include"../radio.h"
 
 #define FREQ      RF69_915MHZ
 #define ENCRYPT   true
