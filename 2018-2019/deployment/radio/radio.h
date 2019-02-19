@@ -172,7 +172,7 @@ class RFM69 {
     static int16_t RSSI; // most accurate RSSI during reception (closest to the reception). RSSI of last packet.
     static uint8_t _mode; // should be protected?
 
-    RFM69(uint8_t slaveSelectPin, uint8_t interruptPin, bool isRFM69HW, uint8_t interruptNum) //interruptNum is now deprecated
+    RFM69(uint8_t slaveSelectPin, uint8_t interruptPin, bool isRFM69HW, uint8_t interruptNum, SPIClass * spiDevice) //interruptNum is now deprecated
                 : RFM69(slaveSelectPin, interruptPin, isRFM69HW){};
 
     RFM69(uint8_t slaveSelectPin=RF69_SPI_CS, uint8_t interruptPin=RF69_IRQ_PIN, bool isRFM69HW=false);
@@ -213,6 +213,7 @@ class RFM69 {
     virtual void sendFrame(uint8_t toAddress, const void* buffer, uint8_t size, bool requestACK=false, bool sendACK=false);
 
     static RFM69* selfPointer;
+    SPIClass mySPI;
     uint8_t _slaveSelectPin;
     uint8_t _interruptPin;
     uint8_t _interruptNum;
