@@ -1,0 +1,1 @@
+This folder must be placed in your Arduino/Libraries folder for your program to correctly find it

@@ -1,26 +1,60 @@
+// SENDER //
+// To be used with radio_test2
 #include "SPI.h"
 #include "radio.h"
+#include "Wire.h"
+#include "wiring_private.h"
+#include "SERCOM.h"
 
-#define FREQ      RF69_915MHZ
-#define ENCRYPT   true
-#define E_KEY     "testing"
-#define NODEID    1
-#define NETWORKID 1
+#define NETWORKID 1 //must be same for both radios
+#define MYNODEID 1 //node id for my radio
+#define ENCRYPT true
+#define E_KEY "testing"
+#define FREQUENCY RF69_915MHZ
 
-
-SPIClass mySPI(&sercom1, 12, 13, 11,SPI_PAD_0_SCK_1, SERCOM_RX_PAD_3);
+SPIClass mySPI(&sercom1, 12, 13, 11, SPI_PAD_0_SCK_1, SERCOM_RX_PAD_3); //set up SPI line
+RFM69 radio(10, 2, true, &mySPI);
 
 void setup() {
+  // put your setup code here, to run once:
   Serial.begin(9600);
-  //mySPI.begin();    // should be called by radio
-  RFM69 radio((uint8_t)10, (uint8_t)2, true, &mySPI);
-  radio.initialize(FREQ, NODEID, NETWORKID);
+  //mySPI.begin();
+
+  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
+
+  pinPeripheral(12, PIO_SERCOM);
+  pinPeripheral(13, PIO_SERCOM);
+  pinPeripheral(11, PIO_SERCOM);
+  
   radio.setHighPower();
   radio.encrypt(E_KEY);
 
+  
+  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  delay(1000);
+  Serial.println("loop");
+  char msg[] = "TEST";
+  bool ans = radio.sendWithRetry(2, msg, 4);
+  Serial.println(ans);
+  delay(200);
+  if(radio.receiveDone()){
+    Serial.print("received from node ");
+    Serial.print(radio.SENDERID, DEC);
+    Serial.print(", message [");
 
+    //RECEIVE BYTES INDEVIDUALLY
+    for (byte i = 0; i < radio.DATALEN; i++)
+      Serial.print((char)radio.DATA[i]);
+
+    Serial.println("]");
+  }
+  
+  if (radio.ACKRequested()){
+      radio.sendACK();
+      Serial.println("ACK sent");
+  }
+    
 }

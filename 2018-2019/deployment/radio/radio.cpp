@@ -308,14 +308,12 @@ void RFM69::sendFrame(uint8_t toAddress, const void* buffer, uint8_t bufferSize,
   while ((readReg(REG_IRQFLAGS1) & RF_IRQFLAGS1_MODEREADY) == 0x00); // wait for ModeReady
   writeReg(REG_DIOMAPPING1, RF_DIOMAPPING1_DIO0_00); // DIO0 is "Packet Sent"
   if (bufferSize > RF69_MAX_DATA_LEN) bufferSize = RF69_MAX_DATA_LEN;
-
   // control byte
   uint8_t CTLbyte = 0x00;
   if (sendACK)
     CTLbyte = RFM69_CTL_SENDACK;
   else if (requestACK)
     CTLbyte = RFM69_CTL_REQACK;
-
   // write to FIFO
   select();
   mySPI->transfer(REG_FIFO | 0x80);
@@ -323,11 +321,9 @@ void RFM69::sendFrame(uint8_t toAddress, const void* buffer, uint8_t bufferSize,
   mySPI->transfer(toAddress);
   mySPI->transfer(_address);
   mySPI->transfer(CTLbyte);
-
   for (uint8_t i = 0; i < bufferSize; i++)
     mySPI->transfer(((uint8_t*) buffer)[i]);
   unselect();
-
   // no need to wait for transmit mode to be ready since its handled by the radio
   setMode(RF69_MODE_TX);
   uint32_t txStart = millis();
