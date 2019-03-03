@@ -1,8 +1,7 @@
 // RECEIVER //
 // To be used with radio_test
-#include "SPI.h"
+#include <SPI.h>
 #include "radio.h"
-#include "Wire.h"
 #include "wiring_private.h"
 #include "SERCOM.h"
 

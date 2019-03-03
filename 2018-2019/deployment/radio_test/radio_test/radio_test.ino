@@ -1,6 +1,6 @@
 // SENDER //
 // To be used with radio_test2
-#include "SPI.h"
+#include <SPI.h>
 #include "radio.h"
 #include "Wire.h"
 #include "wiring_private.h"
