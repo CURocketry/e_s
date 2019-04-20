@@ -51,8 +51,8 @@
 // Create a library object for our RFM69HCW module:
 
 SPIClass mySPI(&sercom1, 12, 13, 11, SPI_PAD_0_SCK_1, SERCOM_RX_PAD_3); //set up SPI line
-RFM69 radio;//(10, 2, true, &mySPI);
-
+RFM69 radio(10, 2, true);
+bool init_radio;
 void setup()
 {
   // Open a serial port so we can send keystrokes to the module:
@@ -70,21 +70,32 @@ void setup()
 //  Blink(LED, 1000);
     
   // Initialize the RFM69HCW:
-  
-  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
+  init_radio = false;
+  //radio.initialize(FREQUENCY, MYNODEID, NETWORKID, &mySPI);
   pinPeripheral(12, PIO_SERCOM);
   pinPeripheral(13, PIO_SERCOM);
   pinPeripheral(11, PIO_SERCOM);
-  radio.setHighPower(); // Always use this for RFM69HCW
+  //radio.setHighPower(); // Always use this for RFM69HCW
 
   // Turn on encryption if desired:
   
-  if (ENCRYPT)
-    radio.encrypt(ENCRYPTKEY);
+//  if (ENCRYPT)
+//    radio.encrypt(ENCRYPTKEY);
 }
 
 void loop()
 {
+  if(!init_radio){
+    radio.initialize(FREQUENCY, MYNODEID, NETWORKID, &mySPI);
+    radio.setHighPower(); // Always use this for RFM69HCW
+    if (ENCRYPT){
+      radio.encrypt(ENCRYPTKEY);
+    }
+    init_radio = true;
+    //radio.print_help();
+  }
+//  radio.print_help();
+//  Serial.println(init_radio);
   // Set up a "buffer" for characters that we'll send:
   static char sendbuffer[62];
   static int sendlength = 0;

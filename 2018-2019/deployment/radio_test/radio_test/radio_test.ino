@@ -13,27 +13,33 @@
 #define FREQUENCY RF69_915MHZ
 
 SPIClass mySPI(&sercom1, 12, 13, 11, SPI_PAD_0_SCK_1, SERCOM_RX_PAD_3); //set up SPI line
-RFM69 radio(10, 2, true, &mySPI);
-
+RFM69 radio(10, 6, true);
+bool initpls;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  //mySPI.begin();
+  mySPI.begin();
 
-  radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
 
-  pinPeripheral(12, PIO_SERCOM);
-  pinPeripheral(13, PIO_SERCOM);
-  pinPeripheral(11, PIO_SERCOM);
-  
-  radio.setHighPower();
-  radio.encrypt(E_KEY);
-
-  
+  initpls = false;
   
 }
 
 void loop() {
+  if(!initpls){
+    if(radio.initialize(FREQUENCY, MYNODEID, NETWORKID, &mySPI)== false){
+      Serial.println("failed to init");
+      while(1);
+    }
+    
+    pinPeripheral(12, PIO_SERCOM);
+    pinPeripheral(13, PIO_SERCOM);
+    pinPeripheral(11, PIO_SERCOM);
+    
+    radio.setHighPower();
+    radio.encrypt(E_KEY);
+    initpls = true;
+  }
   delay(1000);
   Serial.println("loop");
   char msg[] = "TEST";

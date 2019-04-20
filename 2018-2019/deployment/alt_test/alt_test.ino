@@ -1,38 +1,53 @@
 #include "alt_test.h"
 #include "SparkFunMPL3115A2.h"
 
-#define ALT2_SDA 4 // sercom0[0]
-#define ALT2_SCL 3 // sercom0[1]
 
-
-TwoWire myWire(&sercom1, 11, 13); // set up i2c line
-TwoWire alt2(&sercom0, ALT2_SDA, ALT2_SCL);
-
+TwoWire myWire(&sercom2, 22, 38); // set up i2c line, SDA THEN SCL
+//pa22 - sda
+// pa23 - scl
+//MPL3115A2 alt;
+TwoWire testWire(&sercom3, 20, 21);
 void setup() {
-  
-  Serial.begin(115200);
-  myWire.begin();                 // address optional for master
-  alt2.begin();
-  
-  pinPeripheral(11, PIO_SERCOM);
-  pinPeripheral(13, PIO_SERCOM);
-  pinPeripheral(ALT2_SDA, PIO_SERCOM);
-  pinPeripheral(ALT2_SCL, PIO_SERCOM);
+  myWire.begin();
+  Serial.begin(9600);
+  pinPeripheral(22, PIO_SERCOM);
+  pinPeripheral(38, PIO_SERCOM);
+  pinPeripheral(20, PIO_SERCOM);
+  pinPeripheral(21, PIO_SERCOM);
 
-  // In ithaca, read 123 meters or around 404 ft.
+//  // In ithaca, read 123 meters or around 404 ft.
   alt_setup(&myWire, (uint8_t) 0x1E); // should be 30
-  alt_setup(&alt2, (uint8_t) 0x17); // should be 23
+  alt_setup(&testWire, (uint8_t) 0x1E);
+  pinMode(9, OUTPUT);
+  digitalWrite(9, LOW);
+  pinMode(8, OUTPUT);
+  digitalWrite(8, LOW);
+//  //alt_setup(&alt2, (uint8_t) 0x17); // should be 23
   
 }
 
 void loop() {
-  float altitude1 = get_alt(&myWire);
-  float altitude2 = get_alt(&alt2);
-  Serial.print("Alt1: ");
-  Serial.print(altitude1);
-  Serial.print("\tAlt2: ");
-  Serial.println(altitude2);
-  delay(500);
+  delay(1000);
+  float altitude1 = get_alt(&myWire);//alt.readAltitudeFt();
+  float alt2 = get_alt(&testWire);
+  Serial.println(altitude1);
+  if(altitude1 < 10000 && altitude1 > 0){
+    digitalWrite(9, HIGH);
+    Serial.println(altitude1);
+//    digitalWrite(8, HIGH);
+//    digitalWrite(17, HIGH);
+//    digitalWrite(18, HIGH);
+  }
+  if(alt2 < 10000){
+    digitalWrite(8, HIGH);
+    Serial.print("Alt2: ");
+    Serial.println(alt2);
+  }
+//  digitalWrite(9, HIGH);
+//  digitalWrite(8, HIGH);
+//  digitalWrite(17, HIGH);
+//  digitalWrite(18, HIGH);
+  //while(1);
 }
 
 void alt_setup(TwoWire * sensor, uint8_t offset){

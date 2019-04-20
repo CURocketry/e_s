@@ -1,28 +1,35 @@
 #include <Servo.h>
-<<<<<<< Updated upstream
-//#include <servo_test.h>
 
-Servo myServo;
-=======
-
-Servo myservo;
+Servo servo1;
+Servo servo2;
 
 void setup() {
   // put your setup code here, to run once:
-  myservo.attach(8);
-  myservo.write(90);
->>>>>>> Stashed changes
+  servo1.attach(13);
+  servo2.attach(12);
 
-void setup() {
-  myServo.attach(8);
-  myServo.write(0);
+  // final position
+  servo1.write(75);
+  servo2.write(180);
+
+  // second position
+  delay(10000);
+  servo1.write(123);
+  servo2.write(120);
+
+  // start position
+  delay(30000);
+  servo1.write(180); 
+  servo2.write(56);
 }
 
 void loop() {
-  myServo.write(90);
-  delay(1000);
-  myServo.write(180);
-  delay(1000);
-  myServo.write(0);
-  delay(1000);
+  //while(1);
+  delay(10000);
+  servo1.write(123); // 80
+  servo2.write(120);
+  delay(10000);
+  servo1.write(75);
+  servo2.write(180);
+  while(1);
 }
